@@ -1,0 +1,46 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+def scrape_wiki_link(url, loops):
+    try:
+        response = requests.get(
+		url=url,
+        verify=False
+        )
+    except Exception as e:
+        raise Exception(str(e))
+        
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    #title = soup.find(id="firstHeading")
+    #print(title.text)
+
+    allLinks = soup.find(id="bodyContent").find_all("a")
+
+    for link in allLinks:
+        # We are only interested in other wiki articles
+        if link['href'].find("/wiki/") == -1: 
+            continue
+        elif link['href'].find("/wiki/File:")>=0:
+            continue
+        else:
+            links.append(link['href'])
+        scrape_wiki_link("https://en.wikipedia.org" + link['href'], loops)
+    loops = loops +1
+    if loops == n:
+        return
+
+#main
+
+links = []
+loops = 0
+wiki_link = input("give a wiki link:")
+n = int(input("Provide an valid integer:"))
+if n<1 and n>20:
+    print("please provide a vailid integer between 1 and 20")
+try:
+    scrape_wiki_link(wiki_link, loops)
+except Exception as e:
+    print("Error in Execution:"+str(e))
